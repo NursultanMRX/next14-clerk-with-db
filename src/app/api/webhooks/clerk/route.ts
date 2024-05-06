@@ -70,43 +70,34 @@ export async function POST(req: Request) {
 
 
 
-    // const promise = new Promise(function(resolve, reject) {
-    //   setTimeout(function() {
-    //    const sum: number = 4 + 5;
-    //    if(isNaN(sum)) {
-    //      reject('Error while calculating sum.');
-    //    } else {
-    //      resolve(sum);
-    //    }
-    //   }, 2000);
-    //  });
+    const promise = new Promise(function(resolve, reject) {
+      setTimeout(function() {
+        fetch(`${MOCK_URL_USERS}/users` , {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({user}),
+          })
+          .then((res) => {
+            console.log(res.json())
+          })
+          .catch((error) => {
+            console.error("Edit Error", error);
+          })
+      }, 2000);
+     });
      
-    //  promise.then(function(result) {
-    //   console.log(result);
-    //  });
+     promise.then(function(result) {
+      console.log(result);
+     });
 
-     
 
-      // fetch(`${MOCK_URL_USERS}/users` , {
-      //     method: 'POST',
-      //     headers: {
-      //       'Content-Type': 'application/json',
-      //     },
-      //     body: JSON.stringify(user),
-      //     })
-      //     .then((res) => {
-      //       console.log(res.json())
-      //     })
-      //     .catch((error) => {
-      //       console.error("Edit Error", error);
-      //     })
-
-    //console.log(user);
+    // console.log(user);
 
     const newUser = await createUser(user);
 
     if (newUser) {
-      console.log("new user created:")
       await clerkClient.users.updateUserMetadata(id, {
         publicMetadata: {
           userId: newUser._id,
