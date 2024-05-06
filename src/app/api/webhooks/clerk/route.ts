@@ -8,6 +8,7 @@ import { createUser } from "@/lib/actions/user.action";
 export async function POST(req: Request) {
   // You can find this in the Clerk Dashboard -> Webhooks -> choose the webhook
   const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
+  const MOCK_URL_USERS= process.env.MOCK_URL_USERS;
   if (!WEBHOOK_SECRET) {
     throw new Error(
       "Please add WEBHOOK_SECRET from Clerk Dashboard to .env or .env.local"
@@ -44,7 +45,7 @@ export async function POST(req: Request) {
       "svix-signature": svix_signature,
     }) as WebhookEvent;
   } catch (err) {
-    console.error("Error verifying webhook:", err);
+    //console.error("Error verifying webhook:", err);
     return new Response("Error occured", {
       status: 400,
     });
@@ -67,11 +68,45 @@ export async function POST(req: Request) {
       photo: image_url,
     };
 
-    console.log(user);
+
+
+    // const promise = new Promise(function(resolve, reject) {
+    //   setTimeout(function() {
+    //    const sum: number = 4 + 5;
+    //    if(isNaN(sum)) {
+    //      reject('Error while calculating sum.');
+    //    } else {
+    //      resolve(sum);
+    //    }
+    //   }, 2000);
+    //  });
+     
+    //  promise.then(function(result) {
+    //   console.log(result);
+    //  });
+
+     
+
+      // fetch(`${MOCK_URL_USERS}/users` , {
+      //     method: 'POST',
+      //     headers: {
+      //       'Content-Type': 'application/json',
+      //     },
+      //     body: JSON.stringify(user),
+      //     })
+      //     .then((res) => {
+      //       console.log(res.json())
+      //     })
+      //     .catch((error) => {
+      //       console.error("Edit Error", error);
+      //     })
+
+    //console.log(user);
 
     const newUser = await createUser(user);
 
     if (newUser) {
+      console.log("new user created:")
       await clerkClient.users.updateUserMetadata(id, {
         publicMetadata: {
           userId: newUser._id,
@@ -82,8 +117,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ message: "New user created", user: newUser });
   }
 
-  console.log(`Webhook with and ID of ${id} and type of ${eventType}`);
-  console.log("Webhook body:", body);
+  // console.log(`Webhook with and ID of ${id} and type of ${eventType}`);
+  // console.log("Webhook body:", body);
 
   return new Response("", { status: 200 });
 }
